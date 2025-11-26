@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-4%9h6t=a(gr@l-nh@wvab2)xh9t_lr#ftefxcc8466s(h4twcs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
 
 
 # Application definition
@@ -129,6 +130,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # implicit added for allow use api to other endpoints
 CORS_ALLOW_ALL_ORIGINS = True
+
  
 
  # for email verification send otp by email
