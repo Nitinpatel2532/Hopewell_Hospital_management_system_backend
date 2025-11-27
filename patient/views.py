@@ -65,31 +65,70 @@ class patientappointment(APIView):
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         
         
+# class Sendotpview(APIView):
+#     def post(self,request):
+#         email=request.data.get('email')
+#         user,create=Patient_signup.objects.get_or_create(Email=email)
+#         otp=create_otp(user)
+#         send_otp_email(user,otp)
+#         return Response({'message':'otp_sent'},status=200)
+
 class Sendotpview(APIView):
-    def post(self,request):
-        email=request.data.get('email')
-        user,create=Patient_signup.objects.get_or_create(Email=email)
-        otp=create_otp(user)
-        send_otp_email(user,otp)
-        return Response({'message':'otp_sent'},status=200)
+    def post(self, request):
+        email = request.data.get('email')
+
+        # Email must already exist
+        try:
+            user = Patient_signup.objects.get(Email=email)
+        except Patient_signup.DoesNotExist:
+            return Response({'error': 'Email not registered'}, status=400)
+
+        # Create OTP
+        otp = create_otp(user)
+        send_otp_email(user, otp)
+
+        return Response({'message': 'OTP sent successfully'}, status=200)
+
     
 
+# class Verifyotpview(APIView):
+#     def post(self,request):
+#         email=request.data.get('email')
+#         otp=request.data.get('otp')
+
+#         try:
+#             user=Patient_signup.objects.get(Email=email)
+#             otp_obj=Emailotp.objects.filter(user=user,otp=otp).latest('created_at')
+#             if otp_obj.is_valid():
+#                 user.is_verified=True
+#                 user.save()
+#                 return Response({'message':'verify'},status=200)
+#             else:
+#                 return Response({'message':'expired otp'},status=400)
+        
+#         except Patient_signup.DoesNotExist:
+#             return Response({'message':'User does not found'},status=400)
+#         except Emailotp.DoesNotExist:
+#             return Response({'error':'Invalid otp'},status=400)
+
 class Verifyotpview(APIView):
-    def post(self,request):
-        email=request.data.get('email')
-        otp=request.data.get('otp')
+    def post(self, request):
+        email = request.data.get('email')
+        otp = request.data.get('otp')
 
         try:
-            user=Patient_signup.objects.get(Email=email)
-            otp_obj=Emailotp.objects.filter(user=user,otp=otp).latest('created_at')
-            if otp_obj.is_valid():
-                user.is_verified=True
-                user.save()
-                return Response({'message':'verify'},status=200)
-            else:
-                return Response({'message':'expired otp'},status=400)
-        
+            user = Patient_signup.objects.get(Email=email)
         except Patient_signup.DoesNotExist:
-            return Response({'message':'User does not found'},status=400)
+            return Response({'error': 'User not found'}, status=400)
+
+        try:
+            otp_obj = Emailotp.objects.filter(user=user, otp=otp).latest('created_at')
         except Emailotp.DoesNotExist:
-            return Response({'error':'Invalid otp'},status=400)
+            return Response({'error': 'Invalid OTP'}, status=400)
+
+        if otp_obj.is_valid():
+            user.is_verified = True
+            user.save()
+            return Response({'message': 'OTP verified'}, status=200)
+        else:
+            return Response({'error': 'OTP expired'}, status=400)

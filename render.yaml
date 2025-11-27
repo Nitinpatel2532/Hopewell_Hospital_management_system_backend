@@ -2,8 +2,9 @@ services:
   - type: web
     name: myhospital-backend
     env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn myhospital.wsgi:application"
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn myhospital.wsgi:application
+    plan: free
     envVars:
-      - key: DATABASE_URL
-        value: sqlite:///db.sqlite3
+      - key: DJANGO_SETTINGS_MODULE
+        value: myhospital.settings
