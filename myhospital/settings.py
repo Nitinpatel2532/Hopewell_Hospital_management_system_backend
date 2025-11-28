@@ -3,13 +3,16 @@ import dj_database_url
 from decouple import config
 import os
 
+# ============================
+# BASE DIR
+# ============================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ============================
 # SECRET & DEBUG
 # ============================
 SECRET_KEY = config("SECRET_KEY", default="your-local-secret")
-DEBUG = config("DEBUG", default=False, cast=bool)
+DEBUG = config("DEBUG", default=True, cast=bool)  # True for local dev, False for production
 
 # ============================
 # ALLOWED HOSTS
@@ -46,9 +49,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-
     'whitenoise.middleware.WhiteNoiseMiddleware',
-
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -81,15 +82,25 @@ TEMPLATES = [
 WSGI_APPLICATION = 'myhospital.wsgi.application'
 
 # ============================
-# DATABASE (POSTGRES)
+# DATABASE CONFIGURATION
 # ============================
-DATABASES = {
-    "default": dj_database_url.parse(
-        config("DATABASE_URL"),
-        conn_max_age=600,
-        ssl_require=True
-    )
-}
+if DEBUG:
+    # Local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    # Production on Render
+    DATABASES = {
+        "default": dj_database_url.parse(
+            config("DATABASE_URL"),
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
 
 # ============================
 # PASSWORD VALIDATORS
@@ -114,9 +125,8 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ============================
-# CORS CONFIG
+# CORS CONFIGURATION
 # ============================
-# Allow only your frontend domain
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
@@ -124,12 +134,11 @@ CORS_ALLOWED_ORIGINS = [
     "https://hopewell-hospital-management-system.vercel.app",
 ]
 
-# Allow POST, GET, OPTIONS
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 CORS_ALLOW_HEADERS = ["*"]
 
 # ============================
-# EMAIL SETTINGS (Gmail)
+# EMAIL CONFIGURATION (Gmail)
 # ============================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

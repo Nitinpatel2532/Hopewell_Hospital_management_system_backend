@@ -7,7 +7,8 @@ from django.utils import timezone
 class Patient_signup(models.Model):
     First_name=models.CharField(max_length=50)
     Last_name=models.CharField(max_length=50)
-    Contact_number=models.IntegerField()
+    Contact_number = models.CharField(max_length=15)
+
     Email=models.EmailField(max_length=254,unique=True)
     password=models.CharField(max_length=50)
     is_verified=models.BooleanField(default=False)
