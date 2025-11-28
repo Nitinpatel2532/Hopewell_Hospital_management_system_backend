@@ -15,9 +15,10 @@ def create_otp(user):
     otp_obj=Emailotp.objects.create(user=user, otp=otp_code, valid_untill=expiry)
     return otp_code
 
-def send_otp_email(user,otp_code):
-    subject="COMPANY NAME"
-    message=f'your otp is {otp_code}'
-    email_from="nitinpatel74084@gmail.com"
-    recipient_list=[user.Email]
-    send_mail(subject,message,email_from,recipient_list)
+def send_otp_email(user, otp_code):
+    subject = "COMPANY NAME"
+    message = f'Your OTP is {otp_code}'
+    email_from = settings.EMAIL_HOST_USER   # FIXED
+    recipient_list = [user.Email]
+
+    send_mail(subject, message, email_from, recipient_list)

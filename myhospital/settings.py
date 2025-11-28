@@ -3,30 +3,18 @@ import dj_database_url
 from decouple import config
 import os
 
-# ============================
-# BASE DIR
-# ============================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ============================
-# SECRET & DEBUG
-# ============================
 SECRET_KEY = config("SECRET_KEY", default="your-local-secret")
-DEBUG = config("DEBUG", default=True, cast=bool)  # True for local dev, False for production
+DEBUG = config("DEBUG", default=True, cast=bool)
 
-# ============================
-# ALLOWED HOSTS
-# ============================
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
-    ".onrender.com",  # Render backend
-    "hopewell-hospital-management-system.vercel.app",  # Vercel frontend
+    ".onrender.com",
+    "hopewell-hospital-management-system.vercel.app",
 ]
 
-# ============================
-# INSTALLED APPS
-# ============================
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,9 +31,6 @@ INSTALLED_APPS = [
     'patient',
 ]
 
-# ============================
-# MIDDLEWARE
-# ============================
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -60,9 +45,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'myhospital.urls'
 
-# ============================
-# TEMPLATES
-# ============================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -81,11 +63,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myhospital.wsgi.application'
 
+
 # ============================
-# DATABASE CONFIGURATION
+# DATABASE CONFIG
 # ============================
 if DEBUG:
-    # Local development
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -93,7 +75,6 @@ if DEBUG:
         }
     }
 else:
-    # Production on Render
     DATABASES = {
         "default": dj_database_url.parse(
             config("DATABASE_URL"),
@@ -102,9 +83,7 @@ else:
         )
     }
 
-# ============================
-# PASSWORD VALIDATORS
-# ============================
+
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -112,39 +91,46 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# ============================
-# STATIC FILES
-# ============================
+
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# ============================
-# DEFAULT AUTO FIELD
-# ============================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ============================
-# CORS CONFIGURATION
-# ============================
-CORS_ALLOW_ALL_ORIGINS = True
 
+# ============================
+# CORS + CSRF CONFIG
+# ============================
 CORS_ALLOWED_ORIGINS = [
     "https://hopewell-hospital-management-system.vercel.app",
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://hopewell-hospital-management-system.vercel.app",
+    "https://hopewell-hospital-management-system.onrender.com",
+]
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 CORS_ALLOW_HEADERS = ["*"]
 
+
 # ============================
-# EMAIL CONFIGURATION (Gmail)
+# EMAIL CONFIG (GMAIL)
 # ============================
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = config("EMAIL_USER")
-EMAIL_HOST_PASSWORD = config("EMAIL_PASS")
+EMAIL_USE_SSL = False
 
-APPEND_SLASH = False
+EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASS")
 
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+APPEND_SLASH = True
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
