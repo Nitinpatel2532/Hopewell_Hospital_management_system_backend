@@ -18,7 +18,14 @@ def create_otp(user):
 def send_otp_email(user, otp_code):
     subject = "COMPANY NAME"
     message = f'Your OTP is {otp_code}'
-    email_from = settings.EMAIL_HOST_USER   # FIXED
+    email_from = settings.EMAIL_HOST_USER   # ✅ correct
     recipient_list = [user.Email]
 
-    send_mail(subject, message, email_from, recipient_list)
+    send_mail(
+        subject,
+        message,
+        email_from,
+        recipient_list,
+        fail_silently=False  # Important for debugging
+    )
+
