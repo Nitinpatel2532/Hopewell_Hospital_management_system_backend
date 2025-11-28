@@ -22,10 +22,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'rest_framework',
     'corsheaders',
-
     'superadmin',
     'hospital_management',
     'patient',
@@ -63,10 +61,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myhospital.wsgi.application'
 
-
-# ============================
-# DATABASE CONFIG
-# ============================
+# DATABASE
 if DEBUG:
     DATABASES = {
         'default': {
@@ -83,7 +78,6 @@ else:
         )
     }
 
-
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -91,39 +85,47 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+# CORS / CSRF CONFIG
 # ============================
 # CORS + CSRF CONFIG
 # ============================
+CORS_ALLOW_ALL_ORIGINS = False  # keep False for production
 CORS_ALLOWED_ORIGINS = [
     "https://hopewell-hospital-management-system.vercel.app",
 ]
-
 CSRF_TRUSTED_ORIGINS = [
     "https://hopewell-hospital-management-system.vercel.app",
     "https://hopewell-hospital-management-system.onrender.com",
 ]
-
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 CORS_ALLOW_HEADERS = ["*"]
 
-
+# ============================
+# EMAIL CONFIG (Gmail on Render)
 # ============================
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-EMAIL_HOST_USER = os.environ.get("EMAIL_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASS")
+
+EMAIL_HOST_USER = os.environ.get("EMAIL_USER")  # must be set on Render
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_PASS")  # app password on Render
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Local dev: use console backend when DEBUG=True
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+
+
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY")
+
+DEFAULT_FROM_EMAIL = "nitinpatel74084@gmail.com"
